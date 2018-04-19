@@ -13,7 +13,7 @@ class DataModel(object):
         self.root = etree.XML(xml)
 
         schemas = [node for node in self.root.xpath("//class") if 'id' in node.attrib]
-        self.schemas = [schema.attrib['id'] for schema in schemas if schema.xpath(".//field")]
+        self.schemas = [schema.attrib['id'] for schema in schemas]  # TODO: get only user visible schemas  
 
         self.lookups = {}
 

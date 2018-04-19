@@ -13,9 +13,6 @@ __pycache__/
 .tox
 .cache
 
-#pypi
-.pypirc
-
 #pycharm
 .idea/
 

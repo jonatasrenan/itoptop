@@ -85,7 +85,7 @@ class Schema(object):
         clean = lambda k: k[1:] if k[0] == '_' else k
         objs = [{clean(k): v for k, v in obj.items() if v} for obj in objs]
 
-        if self.itop.datamodel:
+        if self.itop.data_model:
             objs = [self.lookup(obj) for obj in objs]
 
         datas = [
@@ -129,7 +129,7 @@ class Schema(object):
 
         key = self.to_oql(query)
 
-        if self.itop.datamodel:
+        if self.itop.data_model:
             update = self.lookup(update)
 
         update_data = {
@@ -212,7 +212,7 @@ class Schema(object):
         :return:
         """
 
-        schema_lookups = self.itop.datamodel.lookup(self.name)
+        schema_lookups = self.itop.data_model.lookup(self.name)
         obj_lookups = [field for field in obj if field in schema_lookups]
         for field in obj_lookups:
             value = obj[field]
