@@ -1,14 +1,10 @@
 # A developer friedly iTOP API Lib for Python3
 
-Support all extensions;
-
-Chained methods;
-
-Data manipulation with NoSQL similar style;
-
-Creation and updates objects containing lookup fields;
-
-Parallel methods;
+- Support all extensions;
+- Chained methods;
+- Data manipulation with NoSQL similar style;
+- Creation and updates objects containing lookup fields;
+- Parallel methods;
 
 ## Install
     pip install itoptop
