@@ -60,7 +60,8 @@ class Itop(object):
         except requests.exceptions.HTTPError as e:
             raise type(e)("Could not connect. HTTP code %s. " % response.status_code + str(e))
         except ValueError as e:
-            raise type(e)('Not a valid JSON, maybe the page is returning other data ' + str(e))
+            e.msg = e.msg
+            raise type(e)('Not a valid JSON, maybe the page is returning other data: ' + str(e.msg), "", 0)
 
         if return_code is not 0:
             raise ItopError(response=response)
