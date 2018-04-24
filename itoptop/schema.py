@@ -98,8 +98,16 @@ class Schema(object):
             } for obj in objs
         ]
 
-        results = tmap(self.itop.request, datas, workers=workers)
-        return [item for result in results for item in result]
+        output = tmap(self.itop.request, datas, workers=workers)
+        output = [item for result in output for item in result]
+
+        if isinstance(output, list) and len(output) == 1:
+            output = output[0]
+
+        if isinstance(output, dict) and len(output) == 1:
+            _, output = list(output.items())[0]
+
+        return output
 
     def update(self, query, update, upsert=False, multi=False):
         """
@@ -147,8 +155,17 @@ class Schema(object):
             if 'Several items' in str(e):
                 if multi:
                     objs = self.find(query)
-                    results = tmap(lambda obj: self.update(obj, update, upsert, multi), objs)
-                    return [item for result in results for item in result]
+                    output = tmap(lambda obj: self.update(obj, update, upsert, multi), objs)
+                    output = [item for result in output for item in result]
+
+                    if isinstance(output, list) and len(output) == 1:
+                        output = output[0]
+
+                    if isinstance(output, dict) and len(output) == 1:
+                        _, output = list(output.items())[0]
+
+                    return output
+
                 raise e
 
             if 'No item found for query' in str(e):
@@ -175,8 +192,15 @@ class Schema(object):
             'class': self.name,
             'key': key
         }
-        request = self.itop.request(data)
-        return request
+        output = self.itop.request(data)
+
+        if isinstance(output, list) and len(output) == 1:
+            output = output[0]
+
+        if isinstance(output, dict) and len(output) == 1:
+            _, output = list(output.items())[0]
+
+        return output
 
     def sync(self, objs, keys=None, workers=10):
         """
@@ -199,7 +223,15 @@ class Schema(object):
             return self.update(query, obj, upsert=True, multi=False)
 
         results = tmap(step, objs, workers=workers)
-        return [item for result in results if result for item in result]
+        output = [item for result in results if result for item in result]
+
+        if isinstance(output, list) and len(output) == 1:
+            output = output[0]
+
+        if isinstance(output, dict) and len(output) == 1:
+            _, output = list(output.items())[0]
+
+        return output
 
     def lookup(self, obj):
         """
