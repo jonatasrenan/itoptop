@@ -55,12 +55,14 @@ class DataModel(object):
                 lookup_schema = target_class
             schema_lookups[extfield] = (key, lookup_schema, lookup_field)
 
-        parent = root.xpath("//class[@id='%s']/parent/text()" % schema)[0]
-        if parent != 'cmdbAbstractObject':  # TODO: improve this
-            import copy
-            lookups_inheritance = copy.deepcopy(self.lookup(parent))
-            lookups_inheritance.update(schema_lookups)
-            schema_lookups = lookups_inheritance
+        parent = root.xpath("//class[@id='%s']/parent/text()" % schema)
+        if len(parent) > 0:
+            parent = parent[0]
+            if parent != 'cmdbAbstractObject':  # TODO: improve this
+                import copy
+                lookups_inheritance = copy.deepcopy(self.lookup(parent))
+                lookups_inheritance.update(schema_lookups)
+                schema_lookups = lookups_inheritance
 
         self.lookups[schema] = schema_lookups
         return schema_lookups
