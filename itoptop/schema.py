@@ -165,13 +165,13 @@ class Schema(object):
                         _, output = list(output.items())[0]
 
                     return output
-
                 raise e
 
             if 'No item found for query' in str(e):
                 if upsert:
                     return self.insert({**query, **update})
                 return {}
+            raise e
 
     def remove(self, query):
         """
