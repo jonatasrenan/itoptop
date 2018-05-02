@@ -247,11 +247,15 @@ class Schema(object):
         schema_lookups = self.itop.data_model.lookup(self.name)
         obj_lookups = [field for field in obj if field in schema_lookups]
         for field in obj_lookups:
-            value = obj[field]
+            old_value = obj[field]
             external_key, lookup_class, lookup_field = schema_lookups[field]
-            if value:
-                value = self.itop.schema(lookup_class).find({lookup_field: value}, ['id'])
-                # value = lookup[0]['id']
+            if old_value:
+                value = self.itop.schema(lookup_class).find({lookup_field: old_value}, ['id'])
+                if value == [] or value == '':
+                    raise ValueError(
+                        'Lookup field Error. ' +
+                        'From: field "%s", value "%s", key "%s", schema "%s" To: field "%s" on schema "%s"' %
+                        (field, old_value, external_key, self.name, lookup_field, lookup_class))
             else:
                 value = None
             obj[external_key] = value
