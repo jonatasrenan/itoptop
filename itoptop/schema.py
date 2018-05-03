@@ -244,7 +244,7 @@ class Schema(object):
         :return:
         """
 
-        schema_lookups = self.itop.data_model.lookup(self.name)
+        schema_lookups = self.itop.data_model.lookupExternalField(self.name)
         obj_lookups = [field for field in obj if field in schema_lookups]
         for field in obj_lookups:
             old_value = obj[field]
@@ -266,6 +266,35 @@ class Schema(object):
         for field in obj_external_keys:
             if not obj[field]:
                 del obj[field]
+
+        schema_LinkedSets = self.itop.data_model.lookupLinkedSet(self.name)
+        obj_linked_sets = [field for field in obj if field in schema_LinkedSets]
+        for field_obj_linked_sets in obj_linked_sets:
+            child_obj = obj[field_obj_linked_sets][0]
+            linked_class, ext_key_to_me, ext_key_to_remote = schema_LinkedSets[field_obj_linked_sets]
+            linked_sets_lookups = self.itop.data_model.lookupExternalField(linked_class)
+            obj_linked_set_lookups = [field for field in child_obj if field in linked_sets_lookups]
+            for field in obj_linked_set_lookups:
+                old_value = child_obj[field]
+                external_key, lookup_class, lookup_field = linked_sets_lookups[field]
+                if old_value:
+                    value = self.itop.schema(lookup_class).find({lookup_field: old_value}, ['id'])
+                    if value == [] or value == '':
+                        raise ValueError(
+                            'Lookup field Error. ' +
+                            'From: field "%s", value "%s", key "%s", schema "%s" To: field "%s" on schema "%s"' %
+                            (field, old_value, external_key, self.name, lookup_field, lookup_class))
+                else:
+                    value = None
+                obj[field_obj_linked_sets][0][external_key] = value
+                del obj[field_obj_linked_sets][0][field]
+
+
+
+
+
+
+
 
         return obj
 
