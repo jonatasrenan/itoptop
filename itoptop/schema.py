@@ -41,7 +41,7 @@ class Schema(object):
         if len(projection):
             output_fields = ", ".join(projection)
         else:
-            output_fields = "*"
+            output_fields = "*+"
 
         key = self.to_oql(query)
 
