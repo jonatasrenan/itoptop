@@ -292,4 +292,38 @@ class Schema(object):
 
         return obj
 
+    def apply_stimulus(self, query, stimulus_data, stimulus="ev_assign"):
+        """
 
+        :param query: The selection criteria for the stimulus
+        :param stimulus_data: A list that is what to apply
+        :param stimulus: The stimulus type the default is env_assign.
+        :return:
+        """
+        query = query if query else {}
+        if not isinstance(query, dict):
+            raise TypeError("Query must be a dict")
+
+        stimulus_data = stimulus_data if stimulus_data else {}
+        if not isinstance(stimulus_data, dict):
+            raise TypeError("Stimulus data must be a dict")
+
+        key = self.to_oql(query)
+
+        if self.itop.data_model:
+            stimulus_data = self.lookup(stimulus_data)
+
+        update_data = {
+            'operation': 'core/apply_stimulus',
+            'comment': 'Apply Stimulus ' + self.name,
+            'class': self.name,
+            'output_fields': "*",
+            'fields': stimulus_data,
+            'stimulus': stimulus,
+            'key': key
+        }
+
+        try:
+            return self.itop.request(update_data)
+        except ItopError as e:
+            raise e
