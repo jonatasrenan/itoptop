@@ -21,7 +21,7 @@ class Schema(object):
             oql += "WHERE " + " AND ".join(['%s LIKE "%s"' % (k, query[k]) for k in query])
         return oql
 
-    def find(self, query=None, projection=None):
+    def find(self, query=None, projection=None, limit='0',page='1'):    # added pagination parameters limit and page
         """
         Selects objects in a schema.
         :param query: Optional. Specifies selection filter. To return all objects in a schema,
@@ -39,7 +39,7 @@ class Schema(object):
             raise TypeError("Projection must be a list")
 
         if len(projection):
-            output_fields = ", ".join(projection)
+            output_fields = ",".join(projection)
         else:
             output_fields = "*+"
 
@@ -50,7 +50,9 @@ class Schema(object):
             'comment': 'Get ' + self.name,
             'class': self.name,
             'key': key,
-            'output_fields': output_fields
+            'output_fields': output_fields,
+            'limit': limit,
+            'page': page
         }
 
         response = self.itop.request(data)
@@ -101,12 +103,14 @@ class Schema(object):
         output = tmap(self.itop.request, datas, workers=workers)
         output = [item for result in output for item in result]
 
+        #Unified output format to list
+        '''
         if isinstance(output, list) and len(output) == 1:
             output = output[0]
 
         if isinstance(output, dict) and len(output) == 1:
             _, output = list(output.items())[0]
-
+        '''
         return output
 
     def update(self, query, update, upsert=False, multi=False):
