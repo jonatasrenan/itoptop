@@ -299,7 +299,7 @@ class Schema(object):
 
         return obj
 
-    def apply_stimulus(self, query, stimulus_data, stimulus="ev_assign"):
+    def apply_stimulus(self, query, stimulus_data, stimulus="env_assign"):
         """
 
         :param query: The selection criteria for the stimulus
