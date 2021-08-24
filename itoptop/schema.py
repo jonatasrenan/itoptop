@@ -38,10 +38,13 @@ class Schema(object):
         if not isinstance(projection, list):
             raise TypeError("Projection must be a list")
 
+        '''projection will be used to parse returned dans for all fields on line 60
         if len(projection):
             output_fields = ", ".join(projection)
         else:
             output_fields = "*+"
+        '''
+        output_fields = "*+"
 
         key = self.to_oql(query)
 
