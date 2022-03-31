@@ -53,7 +53,7 @@ class DataModel(object):
             # cycle through the current schema and its parent until we find the right field
             current_schema = schema
             while current_schema:
-                if not root.xpath("//class[@id='%s']//field[@id='%s']/@type" % (current_schema, key))
+                if not root.xpath("//class[@id='%s']//field[@id='%s']/@type" % (current_schema, key)):
                     parent = root.xpath("//class[@id='%s']/parent/text()" % current_schema)
                     if parent:
                         current_schema = parent[0]
