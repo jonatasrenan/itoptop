@@ -73,6 +73,47 @@ class Schema(object):
 
         return output
 
+    def find_related(self, query=None, relation='impacts', depth=20, direction='down'):
+        """
+        Selects related objects in a schema.
+        :param query: Optional. Specifies selection filter. To return all objects in a schema,
+            omit this parameter or pass an empty object ({}).
+        :param relation: Optional. May be 'impacts' or 'depends on'
+        :param depth: Optional. Limitation of iteration depth (default 20).
+        :param direction: Optional. May be 'up' or 'down'
+        :return:
+        """
+        query = query if query else {}
+        if not isinstance(query, dict):
+            raise TypeError("Query must be a dict")
+
+
+        key = self.to_oql(query)
+
+        data = {
+            'operation': 'core/get_related',
+            'class': self.name,
+            'key': key,
+            'relation': relation,
+            'depth': depth,
+            'direction': direction
+        }
+
+        response = self.itop.request(data, raw_response=True)
+        clean_objects = list(response.values())
+        clean_objects = [{**obj['fields'], **{'id': obj['key']}, **{'class': obj['class']}} for obj in clean_objects]
+
+
+        output = clean_objects
+
+        if isinstance(output, list) and len(output) == 1:
+            output = output[0]
+
+        if isinstance(output, dict) and len(output) == 1:
+            _, output = list(output.items())[0]
+
+        return output
+
     def insert(self, objs, workers=10):
         """
         Inserts a object or objects into a schema.
