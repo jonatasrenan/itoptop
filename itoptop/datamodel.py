@@ -49,12 +49,24 @@ class DataModel(object):
             key = root.xpath("//class[@id='%s']//field[@id='%s']/extkey_attcode/text()" % (schema, field))[0]
             lookup_field = \
                 root.xpath("//class[@id='%s']//field[@id='%s']/target_attcode/text()" % (schema, field))[0]
-            if root.xpath("//class[@id='%s']//field[@id='%s']/@type" % (schema, key))[0] == 'AttributeHierarchicalKey':
-                lookup_schema = schema
-            else:
-                target_class = root.xpath("//class[@id='%s']//field[@id='%s']/target_class/text()" % (schema, key))[0]
-                lookup_schema = target_class
-            schema_lookups[field] = (key, lookup_schema, lookup_field)
+            # The key can be defined in a parent class
+            # cycle through the current schema and its parent until we find the right field
+            current_schema = schema
+            while current_schema:
+                if not root.xpath("//class[@id='%s']//field[@id='%s']/@type" % (current_schema, key)):
+                    parent = root.xpath("//class[@id='%s']/parent/text()" % current_schema)
+                    if parent:
+                        current_schema = parent[0]
+                    else:
+                        current_schema = None
+                else:
+                    if root.xpath("//class[@id='%s']//field[@id='%s']/@type" % (current_schema, key))[0] == 'AttributeHierarchicalKey':
+                        lookup_schema = current_schema
+                    else:
+                        target_class = root.xpath("//class[@id='%s']//field[@id='%s']/target_class/text()" % (current_schema, key))[0]
+                        lookup_schema = target_class
+                    schema_lookups[field] = (key, lookup_schema, lookup_field)
+                    break
 
         parent = root.xpath("//class[@id='%s']/parent/text()" % schema)
         if len(parent) > 0:
