@@ -32,7 +32,7 @@ class Itop(object):
             for schema in self.data_model.schemas:
                 setattr(self, schema, Schema(self, schema))
 
-    def request(self, data):
+    def request(self, data, raw_response=False):
         """
         Generic request to iTop API
         :param data: Valid Data to iTop
@@ -68,6 +68,9 @@ class Itop(object):
 
         if 'objects' not in json_return or json_return['objects'] is None:
             return []
+
+        if raw_response:
+            return json_return['objects']
 
         clean_objects = list(json_return['objects'].values()) if 'objects' in json_return else []
         clean_objects = [{**obj['fields'], **{'id': obj['key']}} for obj in clean_objects]
